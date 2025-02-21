@@ -5,45 +5,35 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.rowanmcalpin.nextftc.ftc.NextFTCOpMode;
+
 import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.helpers.GamepadEx;
+import org.firstinspires.ftc.teamcode.hardware.Slides;
+import com.rowanmcalpin.nextftc.ftc.gamepad.GamepadEx;
 
 @Config
 @TeleOp(name="Slides Testing Freshman", group = "Testing")
-public class SlidesTesting extends LinearOpMode {
-    Robot robot =  Robot.getInstance();
+public class SlidesTesting extends NextFTCOpMode {
+    private  GamepadEx gp1;
+    public  SlidesTesting() {
+        super(Slides.INSTANCE);
+    }
 
     @Override
-    public void runOpMode() throws InterruptedException {
-        GamepadEx gp1 = new GamepadEx();
-
-
+    public void onStartButtonPressed() {
+         gp1 = gamepadManager.getGamepad1();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        robot.init(hardwareMap);
-
-        waitForStart();
-
-
-        while (opModeIsActive()) {
-            gp1.update(gamepad1);
-
-            if (gp1.dpad_up.isCurrentlyPressed() ) {
-                robot.slides.manualUp();
-            } else if (gp1.dpad_down.isCurrentlyPressed()) {
-                robot.slides.manualDown();
-            } else {
-                robot.slides.hold();
-            }
-
-           telemetry.addData("dPad Up: ",gp1.dpad_up.isCurrentlyPressed());
-            telemetry.addData("dPad Down: ",gp1.dpad_down.isCurrentlyPressed());
-            telemetry.update();
-
-        }
+        gp1.getDpadUp().setHeldCommand(() -> Slides.INSTANCE.setPower(1));
+        gp1.getDpadDown().setHeldCommand(() -> Slides.INSTANCE.setPower(-1));
 
 
     }
 
-
+    @Override
+    public  void onUpdate() {
+        telemetry.addData("dPad Up: ",gp1.getDpadDown().getState());
+        telemetry.addData("dPad Down: ",gp1.getDpadDown().getState());
+        telemetry.update();
+    }
 
 }

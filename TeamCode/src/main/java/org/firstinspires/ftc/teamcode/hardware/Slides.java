@@ -4,14 +4,24 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.rowanmcalpin.nextftc.core.Subsystem;
+import com.rowanmcalpin.nextftc.core.command.Command;
+import com.rowanmcalpin.nextftc.core.command.utility.InstantCommand;
+import com.rowanmcalpin.nextftc.ftc.hardware.controllables.MotorEx;
+import com.rowanmcalpin.nextftc.ftc.hardware.controllables.SetPower;
 
 import org.firstinspires.ftc.teamcode.helpers.PIDController;
 
+
 @Config
-public class Slides{
-    public enum  LiftState {HOLDING,MANUAL_UP, MANUAL_DOWN,AUTO_MOVE};
+public class Slides extends Subsystem {
+    public static final Slides INSTANCE = new Slides();
+
+
+    private Slides() { }
     public static final double MAX_SLIDE_UP_SPEED = 1;
     public static final double MAX_SLIDE_DOWN_SPEED = .5;
     public static final double MAX_SLIDE_HEIGHT = 2225;
@@ -21,62 +31,34 @@ public class Slides{
     public static double kD = 0;
     public static int THRESHOLD = 50; // If the slides are within this threshold of the target position, they are considered to be at the target position
     public static double HOLD_POWER = 0.1; // The power needed to not move, but still counteract gravity
-    private DcMotor slide; // The two motors that control the slides
-    private PIDController controller; // The PID controller for the slides
-    public static LiftState liftState = LiftState.HOLDING; // The current state of the slides
+    private MotorEx slide; // The  motor that control the slides
 
-    public void init(HardwareMap hwMap){
+  //  private final PIDFController controller = new PIDFController(new PIDCoefficients(.005, 0.2, 0.0));
+
+
+  /*  public void init(HardwareMap hwMap){
         slide = hwMap.dcMotor.get("Slide");
 
-        slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+     //   controller = new PIDController(kP, kI, kD);
+       // controller.setTolerance(THRESHOLD);
+    } */
 
-        slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        controller = new PIDController(kP, kI, kD);
-        controller.setTolerance(THRESHOLD);
+    @Override
+    public  void initialize() {
+        slide = new MotorEx("Slide");
+        slide.getMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slide.getMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+       // controller.setTolerance(THRESHOLD);
     }
 
-    public  void loop(){
-
-
-        switch (liftState) {
-            case HOLDING:
-                slide.setPower(0.01);
-                break;
-            case MANUAL_DOWN:
-                slide.setPower(-0.5);
-                break;
-
-            case MANUAL_UP:
-                if (getCurrentPosition() >= MAX_SLIDE_HEIGHT-THRESHOLD) {
-                    liftState =  LiftState.HOLDING;
-                } else {
-                    slide.setPower(0.5);
-                }
-                break;
-
-        }
+    public  Command setPower(double value) {
+        return  new InstantCommand( () -> {
+            slide.setPower(value);
+            return  null;
+        });
     }
 
-    public  void setLiftState(LiftState newLiftState)  {
-        liftState = newLiftState;
-    }
-
-    public void manualUp() {
-        setLiftState(LiftState.MANUAL_UP);
-    }
-
-    public void manualDown() {
-        setLiftState(LiftState.MANUAL_DOWN);
-    }
-
-    public void hold() {
-            setLiftState(LiftState.HOLDING);
-    }
-
-    public  float getCurrentPosition() {
+    public  double getCurrentPosition() {
         return slide.getCurrentPosition();
     }
 
