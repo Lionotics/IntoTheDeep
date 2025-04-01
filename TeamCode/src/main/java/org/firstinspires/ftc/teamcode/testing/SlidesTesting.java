@@ -23,8 +23,8 @@ public class SlidesTesting extends NextFTCOpMode {
     public void onStartButtonPressed() {
          gp1 = gamepadManager.getGamepad1();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        gp1.getDpadUp().setHeldCommand(() -> Slides.INSTANCE.setPower(1));
-        gp1.getDpadDown().setHeldCommand(() -> Slides.INSTANCE.setPower(-1));
+        gp1.getDpadUp().setHeldCommand(() -> Slides.INSTANCE.moveUpManual());
+        gp1.getDpadDown().setHeldCommand(() -> Slides.INSTANCE.moveDownManual());
 
 
     }
