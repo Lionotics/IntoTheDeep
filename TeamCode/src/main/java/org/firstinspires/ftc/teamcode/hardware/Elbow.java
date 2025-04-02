@@ -31,7 +31,7 @@ public class Elbow extends Subsystem {
         armBottom.getMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public Command setPower(int i) {
+    public Command setPower(double i) {
         return new InstantCommand(()-> {
             armTop.setPower(i);
             armBottom.setPower(i);
@@ -46,14 +46,14 @@ public class Elbow extends Subsystem {
 
     public  Command makeHorizontalManual() {
             if (getCurrentPosition() > 0 && Slides.INSTANCE.getCurrentPosition() < 5) {
-              return   setPower(1);
+              return   setPower(0.3);
             }
         return  new InstantCommand( ()->{} );
     }
 
     public  Command makeVerticalManual() {
             if (getCurrentPosition() < MAX_ROTATION && Slides.INSTANCE.getCurrentPosition() < 5) {
-               return setPower(-1);
+               return setPower(-0.3);
             }
         return  new InstantCommand( ()->{} );
     }
