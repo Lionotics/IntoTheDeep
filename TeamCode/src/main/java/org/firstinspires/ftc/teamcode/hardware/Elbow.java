@@ -45,15 +45,15 @@ public class Elbow extends Subsystem {
     }
 
     public  Command makeHorizontalManual() {
-            if (getCurrentPosition() > 0 && Slides.INSTANCE.getCurrentPosition() < 5) {
-              return   setPower(0.5);
+            if (getCurrentPosition() >= 0 && Slides.INSTANCE.getCurrentPosition() < 5) {
+              return   setPower(1);
             }
         return  new InstantCommand( ()->{} );
     }
 
     public  Command makeVerticalManual() {
             if (getCurrentPosition() < MAX_ROTATION && Slides.INSTANCE.getCurrentPosition() < 5) {
-               return setPower(-0.5);
+               return setPower(-1);
             }
         return  new InstantCommand( ()->{} );
     }
