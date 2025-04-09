@@ -45,12 +45,16 @@ public class Teleop extends  NextFTCOpMode {
         driverControlled = DriveTrain.INSTANCE.Drive(gamepadManager.getGamepad1(), true);
         driverControlled.invoke();
 
-        gp1.getDpadUp().setHeldCommand(()-> Slides.INSTANCE.moveUpManual());
+       /* gp1.getDpadUp().setHeldCommand(()-> Slides.INSTANCE.moveUpManual());
         gp1.getDpadDown().setHeldCommand(() -> Slides.INSTANCE.moveDownManual());
 
         gp1.getY().setHeldCommand(() -> Elbow.INSTANCE.makeVerticalManual());
-        gp1.getX().setHeldCommand(() -> Elbow.INSTANCE.makeHorizontalManual());
+        gp1.getX().setHeldCommand(() -> Elbow.INSTANCE.makeHorizontalManual()); */
+        gp1.getDpadUp().setHeldCommand(()-> Slides.INSTANCE.setPower(1));
+        gp1.getDpadDown().setHeldCommand(() -> Slides.INSTANCE.setPower(-1));
 
+        gp1.getY().setHeldCommand(() -> Elbow.INSTANCE.setPower(1));
+        gp1.getX().setHeldCommand(() -> Elbow.INSTANCE.setPower(-1));
 
 
     }
