@@ -37,6 +37,8 @@ public class Teleop extends  NextFTCOpMode {
     }
     private GamepadEx gp1;
 
+
+
     @Override
     public void onStartButtonPressed() {
         gp1 = gamepadManager.getGamepad1();
@@ -45,28 +47,33 @@ public class Teleop extends  NextFTCOpMode {
         driverControlled = DriveTrain.INSTANCE.Drive(gamepadManager.getGamepad1(), true);
         driverControlled.invoke();
 
-       /* gp1.getDpadUp().setHeldCommand(()-> Slides.INSTANCE.moveUpManual());
+       gp1.getDpadUp().setHeldCommand(()-> Slides.INSTANCE.moveUpManual());
         gp1.getDpadDown().setHeldCommand(() -> Slides.INSTANCE.moveDownManual());
 
-        gp1.getY().setHeldCommand(() -> Elbow.INSTANCE.makeVerticalManual());
-        gp1.getX().setHeldCommand(() -> Elbow.INSTANCE.makeHorizontalManual()); */
-        gp1.getDpadUp().setHeldCommand(()-> Slides.INSTANCE.setPower(1));
-        gp1.getDpadDown().setHeldCommand(() -> Slides.INSTANCE.setPower(-1));
+      //  gp1.getY().setPressedCommand(() -> Elbow.INSTANCE.makeVerticalExp());
+       // gp1.getX().setPressedCommand(() -> Elbow.INSTANCE.makeHorizontalExp());
 
-        gp1.getY().setHeldCommand(() -> Elbow.INSTANCE.setPower(1));
-        gp1.getX().setHeldCommand(() -> Elbow.INSTANCE.setPower(-1));
+     // gp1.getDpadUp().setHeldCommand(()-> Slides.INSTANCE.setPower(SLIDE_POWER));
+       // gp1.getDpadDown().setHeldCommand(() -> Slides.INSTANCE.setPower(-1*SLIDE_POWER));
+
+       gp1.getY().setHeldCommand(() -> Elbow.INSTANCE.makeVerticalManual() );
+        gp1.getX().setHeldCommand(() -> Elbow.INSTANCE.makeHorizontalManual() );
+
+
+        gp1.getY().setReleasedCommand(() -> Elbow.INSTANCE.setPower(0)  );
+        gp1.getX().setReleasedCommand(() -> Elbow.INSTANCE.setPower(0)  );
 
 
     }
-
     @Override
     public  void onUpdate() {
         telemetry.addData("dPad Up: ",gp1.getDpadUp().getState());
         telemetry.addData("dPad Down: ",gp1.getDpadDown().getState());
         telemetry.addData("Slides Position:  ", Slides.INSTANCE.getCurrentPosition());
         telemetry.addData("Elbow Position ",Elbow.INSTANCE.getCurrentPosition());
+
+
+        telemetry.addData("Vertical exp",Elbow.INSTANCE.makeVerticalExp().isDone());
         telemetry.update();
     }
-
-
 }

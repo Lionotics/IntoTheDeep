@@ -29,6 +29,8 @@ public class Slides extends Subsystem {
     private MotorEx slideRight; // The  motor that control the slides
     private MotorEx slideLeft; // The  motor that control the slides
 
+    public  static double  ELBOW_POWER = 0.7;
+
 
     //  private final PIDFController controller = new PIDFController(new PIDCoefficients(.005, 0.2, 0.0));
 
@@ -43,16 +45,17 @@ public class Slides extends Subsystem {
     @Override
     public  void initialize() {
         slideRight = new MotorEx("slidesRight");
-        slideRight.getMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slideRight.getMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+   //     slideRight.getMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+     //   slideRight.getMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         slideLeft = new MotorEx("slidesLeft");
-        slideLeft.getMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slideLeft.getMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+       // slideLeft.getMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+       // slideLeft.getMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
        // controller.setTolerance(THRESHOLD);
     }
 
-    public Command setPower(int i) {
+    public Command setPower(double i) {
         return new InstantCommand(()-> {
             slideRight.setPower(i);
             slideLeft.setPower(-i);
@@ -61,14 +64,14 @@ public class Slides extends Subsystem {
 
     public  Command moveUpManual() {
             if (getCurrentPosition() < MAX_SLIDE_HEIGHT) {
-               return setPower(1);
+               return setPower(ELBOW_POWER);
         }
             return  new InstantCommand( ()->{} );
     }
 
     public  Command moveDownManual() {
             if (getCurrentPosition() >= 0) {
-              return   setPower(-1);
+              return   setPower(-1*ELBOW_POWER);
             }
         return  new InstantCommand( ()->{} );
     }
