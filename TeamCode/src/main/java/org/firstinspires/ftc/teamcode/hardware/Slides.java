@@ -4,11 +4,9 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.rowanmcalpin.nextftc.core.Subsystem;
 import com.rowanmcalpin.nextftc.core.command.Command;
 import com.rowanmcalpin.nextftc.core.command.utility.InstantCommand;
-import com.rowanmcalpin.nextftc.ftc.hardware.controllables.HoldPosition;
 import com.rowanmcalpin.nextftc.ftc.hardware.controllables.MotorEx;
 
 @Config
@@ -17,19 +15,23 @@ public class Slides extends Subsystem {
 
 
     private Slides() { }
-    public static final double MAX_SLIDE_UP_SPEED = 1;
-    public static final double MAX_SLIDE_DOWN_SPEED = .5;
-    public static final double MAX_SLIDE_HEIGHT = 2400;
+    public static  double MAX_SLIDE_HEIGHT = 2400;
+
+    public static  double MAX_VERTICAL_SLIDE_HEIGHT = 2900;
+
+    public static  double MIN_SLIDE_HEIGHT = 0;
+
     // PID constants kP, kI, and kD
     public static double kP = 0.001;
     public static double kI = 0.55;
     public static double kD = 0;
     public static int THRESHOLD = 50; // If the slides are within this threshold of the target position, they are considered to be at the target position
-    public static double HOLD_POWER = 0.1; // The power needed to not move, but still counteract gravity
     private MotorEx slideRight; // The  motor that control the slides
     private MotorEx slideLeft; // The  motor that control the slides
 
-    public  static double  ELBOW_POWER = 0.7;
+    public  static double SLIDE_POWER = 0.9;
+
+    public  static  double HOLD_POWER_VERTICAL = 0.01;
 
 
     //  private final PIDFController controller = new PIDFController(new PIDCoefficients(.005, 0.2, 0.0));
@@ -49,6 +51,9 @@ public class Slides extends Subsystem {
      //   slideRight.getMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         slideLeft = new MotorEx("slidesLeft");
+
+        slideRight.setCurrentPosition(0);
+        slideLeft.setCurrentPosition(0);
        // slideLeft.getMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
        // slideLeft.getMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -63,15 +68,15 @@ public class Slides extends Subsystem {
     }
 
     public  Command moveUpManual() {
-            if (getCurrentPosition() < MAX_SLIDE_HEIGHT) {
-               return setPower(ELBOW_POWER);
+            if (getCurrentPosition() < MAX_SLIDE_HEIGHT || (getCurrentPosition() < MAX_VERTICAL_SLIDE_HEIGHT && Elbow.INSTANCE.isUp) )  {
+               return setPower(SLIDE_POWER);
         }
             return  new InstantCommand( ()->{} );
     }
 
     public  Command moveDownManual() {
-            if (getCurrentPosition() >= 0) {
-              return   setPower(-1*ELBOW_POWER);
+            if (getCurrentPosition() > MIN_SLIDE_HEIGHT) {
+              return   setPower(-1* SLIDE_POWER);
             }
         return  new InstantCommand( ()->{} );
     }
@@ -79,7 +84,11 @@ public class Slides extends Subsystem {
     @NonNull
     @Override
     public Command getDefaultCommand() {
-        return     setPower(0);
+        if (Elbow.INSTANCE.isUp) {
+            return  setPower(HOLD_POWER_VERTICAL);
+        } else {
+            return setPower(0);
+        }
     }
     public  double getCurrentPosition() {
         return slideRight.getCurrentPosition();

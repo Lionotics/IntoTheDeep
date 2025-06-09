@@ -17,8 +17,8 @@ public class Kicker extends Subsystem {
 
     private boolean KickerAtHome = true;
 
-    public static double HOME = 0.2;
-    public static double KICK = 0.8;
+    public static double HOME = 0.65;
+    public static double KICK = 0.15;
 
     private Servo kicker;
 

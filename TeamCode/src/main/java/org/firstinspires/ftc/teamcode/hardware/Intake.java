@@ -15,17 +15,19 @@ public class Intake extends Subsystem {
     private Servo grabber;
     public Servo pivot;
 
-
-
     private boolean pivotAtA = true;
     private double grabberPos = 0.5;
+
+    public  int useLessVariable = 0;
+
+
 
     // Tunable constants via dashboard
     public static double GRABBER_INCREMENT = 0.1;
     public static double MIN_POS = 0.0;
     public static double MAX_POS = 1.0;
-    public static double PIVOT_POSITION_A = 0.2;
-    public static double PIVOT_POSITION_B = 0.8;
+    public static double PIVOT_POSITION_A = 0.4;
+    public static double PIVOT_POSITION_B = 0.9;
 
     public  static  double newPos = 0;
 
@@ -33,7 +35,7 @@ public class Intake extends Subsystem {
     public void initialize() {
         grabber = OpModeData.INSTANCE.getHardwareMap().get(Servo.class, "grabber");
         pivot = OpModeData.INSTANCE.getHardwareMap().get(Servo.class, "wrist");
-        grabber.setPosition(grabberPos);
+        grabber.setPosition(grabber.getPosition());
         pivot.setPosition(PIVOT_POSITION_A);
     }
 
@@ -53,21 +55,36 @@ public class Intake extends Subsystem {
             pivot.setPosition(newPosition);
         }); // 👈 required to declare Intake as a requirement
     }
-
-    public Command moveGrabberForwardManual() {
+    public Command moveGrabberBackward() {
         return new InstantCommand(()-> {
-        grabberPos += GRABBER_INCREMENT;
-        grabberPos = Math.min(MAX_POS, grabberPos);
+            useLessVariable = 0;
+        grabberPos = Math.min(MAX_POS, grabberPos + GRABBER_INCREMENT);
         grabber.setPosition(grabberPos);
         });
     }
 
-    public Command moveGrabberBackwardManual() {
-        return new InstantCommand(() -> {
-            grabberPos -= GRABBER_INCREMENT;
-            grabberPos = Math.max(MIN_POS, grabberPos);
+    public Command moveGrabberForward() {
+       return new InstantCommand(() -> {
+            useLessVariable = 0;
+            grabberPos = Math.max(MIN_POS, grabberPos - GRABBER_INCREMENT);
             grabber.setPosition(grabberPos);
         });
     }
+
+    public  Command stopMovingGrabber() {
+        return  new InstantCommand(()-> {
+     //       grabber.setPosition(grabber.getPosition());
+        } );
+    }
+
+    /*@Override
+    @NonNull
+    public Command getDefaultCommand() {
+        return     new InstantCommand(()-> {
+            useLessVariable += 1;
+            //double position = grabber.getPosition();
+            //grabber.setPosition(grabber.getPosition());
+        } );
+    } */
 
 }

@@ -23,26 +23,52 @@ public class Elbow extends Subsystem {
     private  static  final int DESIRED_DIFFERENCE_DOWN1 = 100;
     private  static  final int DESIRED_DIFFERENCE_DOWN2 = 1000;
 
+    public   static  int howManyDownPressed = 0;
 
-    public  static  double ELBOW_POWER = 0.7;
+    public  static  int HOW_MANY_DOWN_PRESSED_MAXIMUM = 200;
+    public  static  int HOW_MANY_DOWN_PRESSED_MIDDLE = 140;
+
+    public    boolean isUp = false;
+
+    public  static  double ELBOW_SLOWLY_DOWN_POWER = -0.03;
+
+
+    public  static  double ELBOW_POWER = 0.8;
 
     public  static  double GOING_DOWN_POWER = 0.3; // conteracts gravity so it doesn't go so hard down.
 
-    public  static  double  DEFAULT_COMMAND_POWER  = 0;
+    public  static  double  DEFAULT_COMMAND_POWER  = -0.05;
 
     @Override
     public  void initialize() {
 
         armBottom = new MotorEx("armBottom");
+        armBottom.setCurrentPosition(0);
+        isUp = false;
+
     //    armBottom.getMotor().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
       //  armBottom.getMotor().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
+   /* @NonNull
+    @Override
+    public Command getDefaultCommand() {
+        if (Elbow.INSTANCE.isUp) {
+            return  setPower(DEFAULT_COMMAND_POWER,3);
+        } else {
+            return new InstantCommand( () -> {});
+        }
+    }*/
 
 
-    public Command setPower(double i) {
+    public Command setPower(double i, int hi) {
         return new InstantCommand(()-> {
             armBottom.setPower(i);
+            if (hi == 0) {
+                isUp = false;
+            } else if (hi == 1) {
+                isUp = true;
+            }
         });
     }
 
@@ -54,15 +80,24 @@ public class Elbow extends Subsystem {
     } */
 
     public  Command makeHorizontalManual( ) {
+        howManyDownPressed+=1;
             if (true || getCurrentPosition() >= 0 && Slides.INSTANCE.getCurrentPosition() < 5) {
-              return   setPower(ELBOW_POWER);
+                if (howManyDownPressed < HOW_MANY_DOWN_PRESSED_MIDDLE) {
+                    return setPower(ELBOW_POWER,3);
+                } else if (howManyDownPressed < HOW_MANY_DOWN_PRESSED_MAXIMUM) {
+                    return  setPower(0,0);
+                } else {
+                    return  setPower(ELBOW_SLOWLY_DOWN_POWER,0);
+                }
+
             }
         return  new InstantCommand( ()->{} );
     }
 
     public  Command makeVerticalManual( ) {
+        howManyDownPressed = 0;
         if (true || getCurrentPosition() >= 0 && Slides.INSTANCE.getCurrentPosition() < 5) {
-            return   setPower(-1 * ELBOW_POWER);
+            return   setPower(-1 * ELBOW_POWER,1);
         }
         return  new InstantCommand( ()->{} );
     }
@@ -93,7 +128,7 @@ public class Elbow extends Subsystem {
             @Override
             public void  update() {
                 if (getCurrentPosition() < targetPosition) {
-                    setPower(ELBOW_POWER);
+                    setPower(ELBOW_POWER,3);
                 }
             }
 
@@ -103,7 +138,7 @@ public class Elbow extends Subsystem {
             }
 
             @Override
-            public void stop(boolean interuppted) {
+            public void stop(boolean interupted) {
                 armBottom.setPower(0);
             }
         };
@@ -135,10 +170,10 @@ public class Elbow extends Subsystem {
             @Override
             public void  update() {
                 if ( getCurrentPosition() > targetPosition1 ) {
-                    setPower(-1 * ELBOW_POWER);
+                    setPower(-1 * ELBOW_POWER,3);
                 } else {
                     if (getCurrentPosition() >=  targetPosition2) {
-                        setPower(GOING_DOWN_POWER);
+                        setPower(GOING_DOWN_POWER,3);
                     }
                 }
             }
