@@ -26,10 +26,12 @@ public class Teleop extends NextFTCOpMode {
     }
 
     private GamepadEx gp1;
+    private GamepadEx gp2;
 
     @Override
     public void onStartButtonPressed() {
         gp1 = gamepadManager.getGamepad1();
+        gp2 = gamepadManager.getGamepad2();
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         // Initialize subsystems
@@ -38,14 +40,14 @@ public class Teleop extends NextFTCOpMode {
         driverControlled = DriveTrain.INSTANCE.Drive(gp1, true);
         driverControlled.invoke();
 
-        gp1.getDpadUp().setHeldCommand(() -> Slides.INSTANCE.moveUpManual());
-        gp1.getDpadDown().setHeldCommand(() -> Slides.INSTANCE.moveDownManual());
+        gp2.getDpadUp().setHeldCommand(() -> Slides.INSTANCE.moveUpManual());
+        gp2.getDpadDown().setHeldCommand(() -> Slides.INSTANCE.moveDownManual());
 
-        gp1.getY().setHeldCommand(() -> Elbow.INSTANCE.makeVerticalManual());
-        gp1.getX().setHeldCommand(() -> Elbow.INSTANCE.makeHorizontalManual());
+        gp2.getY().setHeldCommand(() -> Elbow.INSTANCE.makeVerticalManual());
+        gp2.getX().setHeldCommand(() -> Elbow.INSTANCE.makeHorizontalManual());
 
-          gp1.getY().setReleasedCommand(() -> Elbow.INSTANCE.setPower(Elbow.DEFAULT_COMMAND_POWER,3));
-          gp1.getX().setReleasedCommand(() -> Elbow.INSTANCE.setPower(0,3));
+          gp2.getY().setReleasedCommand(() -> Elbow.INSTANCE.setPower(Elbow.DEFAULT_COMMAND_POWER,3));
+          gp2.getX().setReleasedCommand(() -> Elbow.INSTANCE.setPower(0,3));
 
         gp1.getRightBumper().setHeldCommand( ()-> Intake.INSTANCE.moveGrabberBackward() );
         gp1.getLeftBumper().setHeldCommand( ()-> Intake.INSTANCE.moveGrabberForward() );
@@ -54,7 +56,7 @@ public class Teleop extends NextFTCOpMode {
        // gp1.getLeftBumper().setReleasedCommand( ()->Intake.INSTANCE.stopMovingGrabber() );
 
 
-        gp1.getB().setPressedCommand( ()->Intake.INSTANCE.togglePivotCommand());
+        gp2.getB().setPressedCommand( ()->Intake.INSTANCE.togglePivotCommand());
         gp1.getA().setPressedCommand( ()-> Kicker.INSTANCE.toggleKickerCommand());
     }
 
